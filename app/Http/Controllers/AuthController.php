@@ -108,26 +108,37 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // data diupdate
-        $data = [
-            'username' => $request->username,
-            'email' => $request->email,
-        ];
+
 
         // handle image (upload & delete image)
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $image->store('users', 'public');
+            $imageName = $image->hashName(); // generate hash name
+            $image->move(public_path('storage/users'), $imageName); // move with hash name
 
+            // Hapus file lama jika ada
             if ($user->image) {
-                Storage::disk('public')->delete('users/' . $user->image);
+                $oldImagePath = public_path('storage/users/' . $user->image);
+                if (file_exists($oldImagePath)) {
+                    @unlink($oldImagePath);
+                }
             }
 
-            $data['image'] = $image->hashName();
+           $updateData = [
+            'username' => $request->username,
+            'email' => $request->email,
+            'image' => $imageName,
+        ];
+        } else {
+            // Jika tidak ada file image, hanya update username dan email
+            $updateData = [
+                'username' => $request->username,
+                'email' => $request->email,
+            ];
         }
 
         // update data baru ke database
-        $user->update($data);
+        $user->update($updateData);
         return response()->json([
             "success" => true,
             "message" => "Resource updated successfully!.",
@@ -251,7 +262,7 @@ class AuthController extends Controller
         return response()->json(['message' => 'Password berhasil diubah.']);
     }
 
-    
+
     public function updatePassword(Request $request, $id)
     {
         try {

@@ -40,24 +40,24 @@ export default function AccountInfoPage() {
     const handleInputChange = (e) => {
         const { name, value, type, files } = e.target;
         if (type === "file") {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                image: files[0]
+                image: files[0],
             }));
             setPreviewImage(URL.createObjectURL(files[0]));
         } else {
-            setFormData(prev => ({
+            setFormData((prev) => ({
                 ...prev,
-                [name]: value
+                [name]: value,
             }));
         }
     };
 
     const handlePasswordChange = (e) => {
         const { name, value } = e.target;
-        setPasswordData(prev => ({
+        setPasswordData((prev) => ({
             ...prev,
-            [name]: value
+            [name]: value,
         }));
     };
 
@@ -66,23 +66,33 @@ export default function AccountInfoPage() {
         setLoading(true);
         setMessage("");
         try {
-            await updateUser(userInfo.id, formData);
+            const response = await updateUser(userInfo.id, formData);
             setMessage("Profile berhasil diperbarui!");
-            setUsers(prev => ({
-                ...prev,
-                username: formData.username,
-                email: formData.email,
-                image: formData.image ? formData.image.name : prev.image
-            }));
-            const updatedUserInfo = {
-                ...userInfo,
-                username: formData.username,
-                email: formData.email,
-                image: formData.image ? formData.image.name : userInfo.image
-            };
-            localStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
+
+            // Ambil data user terbaru dari response
+            let latestUser = response.data ?? null;
+            // Jika response tidak mengandung data user, fallback ke getUserById jika tersedia
+            if (!latestUser && typeof getUserById === "function") {
+                const userRes = await getUserById(userInfo.id);
+                latestUser =
+                    userRes && userRes.data && userRes.data.data
+                        ? userRes.data.data
+                        : null;
+            }
+
+            if (latestUser) {
+                setUsers(latestUser);
+                window.localStorage.removeItem("userInfo");
+                window.localStorage.setItem(
+                    "userInfo",
+                    JSON.stringify(latestUser)
+                );
+            }
         } catch (error) {
-            setMessage("Gagal memperbarui profile: " + (error.message || "Unknown error"));
+            setMessage(
+                "Gagal memperbarui profile: " +
+                    (error.message || "Unknown error")
+            );
         } finally {
             setLoading(false);
         }
@@ -110,7 +120,10 @@ export default function AccountInfoPage() {
                 password_confirmation: "",
             });
         } catch (error) {
-            setMessage("Gagal memperbarui password: " + (error.message || "Unknown error"));
+            setMessage(
+                "Gagal memperbarui password: " +
+                    (error.message || "Unknown error")
+            );
         } finally {
             setLoading(false);
         }
@@ -146,7 +159,11 @@ export default function AccountInfoPage() {
                     <h4 className="fw-bold mb-4">⚙️ Account Settings</h4>
                     {message && (
                         <Alert
-                            variant={message.includes("berhasil") ? "success" : "danger"}
+                            variant={
+                                message.includes("berhasil")
+                                    ? "success"
+                                    : "danger"
+                            }
                             className="mb-3"
                         >
                             {message}
@@ -154,7 +171,11 @@ export default function AccountInfoPage() {
                     )}
                     <div className="mb-3 d-flex gap-2">
                         <Button
-                            variant={activeTab === "profile" ? "secondary" : "outline-secondary"}
+                            variant={
+                                activeTab === "profile"
+                                    ? "secondary"
+                                    : "outline-secondary"
+                            }
                             onClick={() => {
                                 setActiveTab("profile");
                                 setMessage("");
@@ -163,7 +184,11 @@ export default function AccountInfoPage() {
                             Profil
                         </Button>
                         <Button
-                            variant={activeTab === "password" ? "secondary" : "outline-secondary"}
+                            variant={
+                                activeTab === "password"
+                                    ? "secondary"
+                                    : "outline-secondary"
+                            }
                             onClick={() => {
                                 setActiveTab("password");
                                 setMessage("");
@@ -206,7 +231,9 @@ export default function AccountInfoPage() {
                                 </Col>
                             </Row>
                             <Form.Group className="mb-3" controlId="image">
-                                <Form.Label>Profile Image (optional)</Form.Label>
+                                <Form.Label>
+                                    Profile Image (optional)
+                                </Form.Label>
                                 <Form.Control
                                     type="file"
                                     name="image"
@@ -218,10 +245,21 @@ export default function AccountInfoPage() {
                             {(previewImage || users.image) && (
                                 <div className="mb-3">
                                     <img
-                                        src={previewImage ? previewImage : (users.image ? `/storage/users/${users.image}` : "")}
+                                        src={
+                                            previewImage
+                                                ? previewImage
+                                                : users.image
+                                                ? `/storage/users/${users.image}`
+                                                : ""
+                                        }
                                         alt="Preview"
                                         className="rounded"
-                                        style={{ width: 80, height: 80, objectFit: "cover", border: "2px solid #eee" }}
+                                        style={{
+                                            width: 80,
+                                            height: 80,
+                                            objectFit: "cover",
+                                            border: "2px solid #eee",
+                                        }}
                                     />
                                 </div>
                             )}
@@ -263,7 +301,9 @@ export default function AccountInfoPage() {
                                             type="password"
                                             placeholder="Ulangi password"
                                             name="password_confirmation"
-                                            value={passwordData.password_confirmation}
+                                            value={
+                                                passwordData.password_confirmation
+                                            }
                                             onChange={handlePasswordChange}
                                             required
                                             disabled={loading}

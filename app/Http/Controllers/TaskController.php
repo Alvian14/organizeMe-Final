@@ -33,7 +33,7 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
-        
+
         // Validasi input
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:100',
@@ -65,8 +65,16 @@ class TaskController extends Controller
         $imageName = null;
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $image->store('tasks', 'public');
-            $imageName = $image->hashName();
+            $imageName = $image->hashName(); // generate hash name
+            $image->move(public_path('storage/tasks/'), $imageName); // move with hash name
+
+            // Hapus file lama jika ada
+            if ($user->image) {
+                $oldImagePath = public_path('storage/tasks/' . $user->image);
+                if (file_exists($oldImagePath)) {
+                    @unlink($oldImagePath);
+                }
+            }
         }
 
         // Simpan task ke database
@@ -146,18 +154,22 @@ class TaskController extends Controller
             'deadline' => $request->deadline,
         ];
 
-        // Jika ada file image yang diupload
+
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $image->store('tasks', 'public');
+            $imageName = $image->hashName(); // generate hash name
+            $image->move(public_path('storage/tasks/'), $imageName); // move with hash name
 
-            // Hapus gambar lama jika ada
+            // Hapus file lama jika ada
             if ($task->image) {
-                Storage::disk('public')->delete('tasks/' . $task->image);
+                $oldImagePath = public_path('storage/tasks/' . $task->image);
+                if (file_exists($oldImagePath)) {
+                    @unlink($oldImagePath);
+                }
             }
-
-            $data['image'] = $image->hashName();
+            $data['image'] = $imageName ;
         }
+
 
         // Update ke database
         $task->update($data);

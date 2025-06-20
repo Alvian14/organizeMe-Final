@@ -36,7 +36,6 @@ const MyTaskPage = () => {
             if (userInfo?.id) {
                 try {
                     const data = await getTasksByUserIdFull(userInfo.id);
-                    console.log(data);
                     setTasks(data);
                 } catch (error) {
                     console.error("Gagal mengambil task:", error);
@@ -418,7 +417,7 @@ const MyTaskPage = () => {
                                         {selectedTask.image && (
                                             <div className="mb-3">
                                                 <Image
-                                                    src={`${bookImageStorage}/${selectedTask.image}`}
+                                                    src={`${bookImageStorage}${selectedTask.image}`}
                                                     alt="Task"
                                                     fluid
                                                     rounded
@@ -430,7 +429,7 @@ const MyTaskPage = () => {
                                                     onError={(e) => {
                                                         e.target.onerror = null;
                                                         e.target.src =
-                                                            "https://via.placeholder.com/250x150?text=No+Image";
+                                                            "";
                                                     }}
                                                 />
                                             </div>
