@@ -1,12 +1,25 @@
 import { useEffect, useState } from "react";
 import { Table, Card, Button, Modal, Form } from "react-bootstrap";
 import { deleteUser, getUser, updateUserRole } from "../../_services/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function UsersPageAdmin() {
+    const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [newRole, setNewRole] = useState("");
+    const [userInfo] = useState(() => JSON.parse(localStorage.getItem("userInfo")));
+
+    useEffect(() => {
+        if (!userInfo) {
+            navigate("/login", { replace: true });
+        }
+    }, [userInfo, navigate]);
+
+    if (!userInfo) {
+        return null;
+    }
 
     // Ambil data user saat pertama kali
     useEffect(() => {

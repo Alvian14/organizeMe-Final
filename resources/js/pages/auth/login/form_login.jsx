@@ -13,6 +13,26 @@ export default function Login() {
 
     const token = localStorage.getItem("accessToken");
     const decodedData = useDecodeToken(token);
+    // Hapus userInfo state, langsung cek localStorage di useEffect
+    // const [userInfo, setUserInfo] = useState(() => JSON.parse(localStorage.getItem("userInfo")));
+
+    useEffect(() => {
+        // Ambil userInfo langsung dari localStorage
+        const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+        if (userInfo && userInfo.role) {
+            // Cek pathname, jika sudah di halaman tujuan, jangan navigate lagi
+            if (userInfo.role === "admin" ) {
+                // navigate("/admin/user-page-admin", { replace: true });
+                window.location.replace("/admin/user-page-admin");
+            } else if (userInfo.role === "user" ) {
+                // navigate("/dashboard", { replace: true });
+                window.location.replace("/dashboard");
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [navigate]); // Jalankan hanya sekali saat mount
+
+
 
     const handleChange = (e) => {
         setFormData({
@@ -45,8 +65,12 @@ export default function Login() {
             const response = await loginUser(formData);
             localStorage.setItem("accessToken", response.token);
             localStorage.setItem("userInfo", JSON.stringify(response.user));
-
-            navigate(response.user.role === "admin" ? "/admin/user-page-admin" : "/dashboard");
+            // Redirect langsung setelah login berhasil, tanpa menunggu useEffect
+            if (response.user.role === "admin") {
+                navigate("/admin/user-page-admin", { replace: true });
+            } else {
+                navigate("/dashboard", { replace: true });
+            }
         } catch (error) {
             setErrorMessage(error?.response?.data?.message || "Username atau password salah");
         }

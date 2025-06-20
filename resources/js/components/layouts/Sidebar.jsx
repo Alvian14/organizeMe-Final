@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import LogoutModal from "../../pages/logout";
 import { userImageStorage } from "../../_api";
@@ -7,10 +7,19 @@ import { userImageStorage } from "../../_api";
 
 
 export default function Sidebar() {
+    const navigate = useNavigate();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    const [userInfo, setUserInfo] = useState(() => JSON.parse(localStorage.getItem("userInfo")));
 
+    useEffect(() => {
+        if (!userInfo) {
+            navigate("/", { replace: true });
+        }
+    }, [userInfo, navigate]);
 
+    if (!userInfo) {
+        return null;
+    }
 
     const handleLogoutClick = () => {
         setShowLogoutModal(true);
