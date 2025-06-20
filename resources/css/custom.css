@@ -1,0 +1,99 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f6f6f6;
+  margin: 0;
+  padding: 0;
+}
+
+h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: #d9d9d9;
+  width: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 0 20px 20px 0;
+}
+
+.sidebar .profile {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sidebar .nav-link {
+  padding: 0.6rem 1rem;
+  margin: 0.3rem 0;
+  border-radius: 10px;
+  text-decoration: none;
+  color: black;
+  display: block;
+  font-weight: 500;
+}
+
+.sidebar .nav-link.active {
+  background-color: white;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 2rem;
+}
+
+.card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-bottom: 2rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.table th {
+  background-color: #f1f1f1;
+}
+
+.button {
+  background-color: #ff5722;
+  border: none;
+  padding: 0.4rem 1rem;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 5px;
+  font-weight: 500;
+}
+
+.button.edit {
+  background-color: #f97316;
+}
+
+.button.delete {
+  background-color: #ef4444;
+}
+
+.button.add {
+  background-color: #ff5722;
+  margin-bottom: 1rem;
+}
