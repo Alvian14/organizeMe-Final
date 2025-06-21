@@ -14,7 +14,7 @@ class TaskController extends Controller
 {
     public function index()
     {
-        $task = Task::with('user', 'category', 'status', 'priority')->get();
+        $task = Task::with('user', 'status', 'priority')->get();
 
         if ($task->isEmpty()) {
             return response()->json([
@@ -167,7 +167,7 @@ class TaskController extends Controller
                     @unlink($oldImagePath);
                 }
             }
-            $data['image'] = $imageName ;
+            $data['image'] = $imageName;
         }
 
 
@@ -238,10 +238,10 @@ class TaskController extends Controller
             'priority_levels.name as priority_name',
             'task_statuses.name as status_name'
         )
-        ->leftJoin('priority_levels', 'tasks.priority_id', '=', 'priority_levels.id')
-        ->leftJoin('task_statuses', 'tasks.status_id', '=', 'task_statuses.id')
-        ->where('tasks.user_id', $id)
-        ->get();
+            ->leftJoin('priority_levels', 'tasks.priority_id', '=', 'priority_levels.id')
+            ->leftJoin('task_statuses', 'tasks.status_id', '=', 'task_statuses.id')
+            ->where('tasks.user_id', $id)
+            ->get();
 
         if (!$tasks) {
             return response()->json([

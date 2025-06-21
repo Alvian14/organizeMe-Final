@@ -13,16 +13,6 @@ class CategorySeed extends Seeder
      */
     public function run(): void
     {
-        Category::create([
-            'name' => 'Daily'
-        ]);
-
-        Category::create([
-            'name' => 'Weekly'
-        ]);
-
-        Category::create([
-            'name' => 'Monthly'
-        ]);
+        //
     }
 }
